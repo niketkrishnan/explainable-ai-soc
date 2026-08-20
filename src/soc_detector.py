@@ -90,6 +90,11 @@ class HybridSOCDetector:
         )
         self._fitted = False
 
+    FEATURE_NAMES = ("success", "privilege_change", "log_bytes_out", "admin_or_process", "is_login", "is_dns", "risky_process", "has_destination")
+
+    def feature_names(self) -> tuple[str, ...]:
+        return self.FEATURE_NAMES
+
     def _vectorize(self, event: SecurityEvent) -> list[float]:
         return [
             float(event.success),
