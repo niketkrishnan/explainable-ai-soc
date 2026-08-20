@@ -11,3 +11,10 @@
 - Added typed event validation, CSV loading, configurable detection context rules,
   feature metadata, risk-band calibration, incident metrics, a read-only API,
   structured audit records, ATT&CK coverage, and data-quality checks.
+
+
+## Development integrity
+
+All commits in this improvement series represent changes made to source code,
+tests, CI, evaluation, or documentation. Commit timestamps reflect the actual
+creation time of each change.
