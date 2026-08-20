@@ -267,7 +267,6 @@ def technique_coverage(alerts: list[Alert]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
-
 def summarize_alert_quality(alerts: list[Alert]) -> dict[str, Any]:
     """Measure evidence completeness without claiming model performance.
 
@@ -275,13 +274,7 @@ def summarize_alert_quality(alerts: list[Alert]) -> dict[str, Any]:
     explanation coverage without treating it as a detection-quality metric.
     """
     if not alerts:
-        return {
-            "alert_count": 0,
-            "with_reasons": 0,
-            "with_techniques": 0,
-            "explanation_coverage": 0.0,
-        }
-
+        return {"alert_count": 0, "with_reasons": 0, "with_techniques": 0, "explanation_coverage": 0.0}
     with_reasons = sum(bool(alert.reasons) for alert in alerts)
     with_techniques = sum(bool(alert.techniques) for alert in alerts)
     return {
@@ -290,4 +283,3 @@ def summarize_alert_quality(alerts: list[Alert]) -> dict[str, Any]:
         "with_techniques": with_techniques,
         "explanation_coverage": round(with_reasons / len(alerts), 4),
     }
-
