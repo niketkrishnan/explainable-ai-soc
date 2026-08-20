@@ -257,3 +257,11 @@ def summarize_incidents(incidents: list[dict[str, Any]]) -> dict[str, Any]:
         "severity_distribution": distribution,
         "mean_max_score": round(sum(float(i.get("max_score", 0.0)) for i in incidents) / len(incidents), 4) if incidents else 0.0,
     }
+
+
+def technique_coverage(alerts: list[Alert]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for alert in alerts:
+        for technique in alert.techniques:
+            counts[technique] = counts.get(technique, 0) + 1
+    return dict(sorted(counts.items()))
