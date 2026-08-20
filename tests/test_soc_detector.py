@@ -59,3 +59,21 @@ def test_security_event_rejects_invalid_values():
         event(6, event_type="unknown")
     with pytest.raises(ValueError):
         event(7, bytes_out=-1)
+
+
+def test_csv_loader_reads_fixture():
+    from src.event_loader import load_csv_events
+
+    loaded = load_csv_events("data/events.csv")
+    assert len(loaded) == 10
+    assert loaded[0].user == "alice"
+
+
+def test_csv_loader_rejects_missing_columns(tmp_path):
+    from src.event_loader import load_csv_events
+
+    bad = tmp_path / "bad.csv"
+    bad.write_text("timestamp,user\n2026-01-01T00:00:00Z,x\n")
+    import pytest
+    with pytest.raises(ValueError, match="Missing required columns"):
+        load_csv_events(bad)
