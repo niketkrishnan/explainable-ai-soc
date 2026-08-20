@@ -1,5 +1,7 @@
 # Explainable AI SOC Detection and Triage Platform
 
+[![CI](https://github.com/niketkrishnan/explainable-ai-soc/actions/workflows/ci.yml/badge.svg)](https://github.com/niketkrishnan/explainable-ai-soc/actions/workflows/ci.yml)
+
 A defensive portfolio project that combines transparent detection rules, an Isolation Forest anomaly model, incident correlation, and evidence-based analyst explanations. It is designed to demonstrate detection engineering and responsible use of ML in a SOC workflow.
 
 > **Authorized-use notice:** This repository scores supplied telemetry only. It does not scan networks, execute endpoint commands, or access external systems.
@@ -62,3 +64,16 @@ rule with evidence, update regression tests, run the evaluation, and document th
 operational trade-off. The current fixture demonstrates behavior only; public
 benchmark results will be added only with verified dataset terms and a committed
 comparison against rules-only and ML-only baselines.
+
+
+## Reviewer quickstart
+
+Review the detector contract in `src/soc_detector.py`, the regression suite in `tests/test_soc_detector.py`, and the reproducible artifact in `artifacts/demo_results.json`. The most important design choice is the separation of transparent rule evidence from the anomaly score so an analyst can challenge or tune either signal.
+
+## What I learned
+
+A useful SOC model is not enough on its own: alert evidence, stable schemas, incident grouping, and honest evaluation boundaries determine whether a detection can be trusted in an analyst workflow.
+
+## Limitations
+
+The committed telemetry is a small local fixture. It does not establish production precision, recall, latency, or generalization across organizations. Any benchmark claim should include dataset terms, version, split strategy, baseline, and reproducible commands.
