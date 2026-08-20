@@ -114,3 +114,9 @@ def test_alert_validation_and_incident_summary():
     summary = summarize_incidents([{"max_score": 0.9}, {"max_score": 0.1}])
     assert summary["incident_count"] == 2
     assert summary["severity_distribution"]["high"] == 1
+
+
+def test_technique_coverage_counts_alert_evidence():
+    from soc_detector import technique_coverage
+    alerts = [Alert(0, "medium", 0.3, (), ("T1110",), "a", "h", "login"), Alert(1, "high", 0.8, (), ("T1110", "T1098"), "a", "h", "admin")]
+    assert technique_coverage(alerts) == {"T1098": 1, "T1110": 2}
