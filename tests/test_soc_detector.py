@@ -104,3 +104,13 @@ def test_risk_band_boundaries():
     assert risk_band(0.6) == "high"
     with pytest.raises(ValueError):
         risk_band(1.1)
+
+
+def test_alert_validation_and_incident_summary():
+    from soc_detector import summarize_incidents, validate_alert_payload
+
+    alert = {"event_index": 0, "severity": "medium", "score": 0.3, "reasons": [], "techniques": [], "user": "a", "asset": "h", "event_type": "login"}
+    validate_alert_payload(alert)
+    summary = summarize_incidents([{"max_score": 0.9}, {"max_score": 0.1}])
+    assert summary["incident_count"] == 2
+    assert summary["severity_distribution"]["high"] == 1
