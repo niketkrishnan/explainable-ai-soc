@@ -53,3 +53,12 @@ tests/                    Regression tests
 ## Development milestones
 
 The repository history is organized into incremental documentation, implementation, testing, evaluation, and release milestones.
+
+
+## Reproducible development path
+
+The project can be extended in small steps: validate input data, add a detection
+rule with evidence, update regression tests, run the evaluation, and document the
+operational trade-off. The current fixture demonstrates behavior only; public
+benchmark results will be added only with verified dataset terms and a committed
+comparison against rules-only and ML-only baselines.
