@@ -198,3 +198,26 @@ def correlate_incidents(
     for incident in incidents:
         incident["last_seen"] = incident["last_seen"].isoformat().replace("+00:00", "Z")
     return incidents
+
+
+def failed_login_burst(events: list[SecurityEvent], threshold: int = 3, window_minutes: int = 10) -> dict[int, RuleResult]:
+    """Return explainable burst matches keyed by event index."""
+    matches: dict[int, RuleResult] = {}
+    for index, event in enumerate(events):
+        if event.event_type != "login" or event.success:
+            continue
+        start = event.dt.timestamp() - window_minutes * 60
+        count = sum(
+            1 for previous in events[: index + 1]
+            if previous.event_type == "login" and not previous.success
+            and previous.user == event.user and previous.dt.timestamp() >= start
+        )
+        if count >= threshold:
+            matches[index] = RuleResult(
+                name="failed_login_burst",
+                matched=True,
+                reason=f"{count} failed logins for {event.user} within {window_minutes} minutes",
+                technique="T1110",
+                score=0.45,
+            )
+    return matches
