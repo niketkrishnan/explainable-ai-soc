@@ -93,3 +93,14 @@ def test_outbound_threshold_can_be_lowered():
     reasons, _, score = detector._rule_evidence(event(13, event_type="file", bytes_out=600))
     assert "unusually large outbound transfer" in reasons
     assert score > 0
+
+
+def test_risk_band_boundaries():
+    from soc_detector import risk_band
+    import pytest
+
+    assert risk_band(0.0) == "low"
+    assert risk_band(0.2) == "medium"
+    assert risk_band(0.6) == "high"
+    with pytest.raises(ValueError):
+        risk_band(1.1)
