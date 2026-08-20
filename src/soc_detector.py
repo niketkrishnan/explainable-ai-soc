@@ -152,12 +152,7 @@ class HybridSOCDetector:
         combined = float(np.clip(0.65 * rule_score + 0.35 * anomaly_score, 0.0, 1.0))
         if anomaly_score >= 0.65:
             reasons.append(f"ML anomaly score={anomaly_score:.2f}")
-        if combined >= 0.60:
-            severity = "high"
-        elif combined >= 0.20:
-            severity = "medium"
-        else:
-            severity = "low"
+        severity = risk_band(combined)
         return Alert(
             event_index=event_index,
             severity=severity,
@@ -228,3 +223,14 @@ def failed_login_burst(events: list[SecurityEvent], threshold: int = 3, window_m
                 score=0.45,
             )
     return matches
+
+
+def risk_band(score: float) -> str:
+    """Map a bounded risk score to a stable analyst-facing band."""
+    if not 0.0 <= score <= 1.0:
+        raise ValueError("risk score must be between 0 and 1")
+    if score >= 0.60:
+        return "high"
+    if score >= 0.20:
+        return "medium"
+    return "low"
