@@ -77,3 +77,19 @@ def test_csv_loader_rejects_missing_columns(tmp_path):
     import pytest
     with pytest.raises(ValueError, match="Missing required columns"):
         load_csv_events(bad)
+
+
+def test_failed_login_burst_is_explainable():
+    from soc_detector import failed_login_burst
+
+    events = [event(10, success=False), event(11, success=False), event(12, success=False)]
+    matches = failed_login_burst(events)
+    assert 2 in matches
+    assert "3 failed logins" in matches[2].reason
+
+
+def test_outbound_threshold_can_be_lowered():
+    detector = HybridSOCDetector(outbound_threshold=500)
+    reasons, _, score = detector._rule_evidence(event(13, event_type="file", bytes_out=600))
+    assert "unusually large outbound transfer" in reasons
+    assert score > 0
