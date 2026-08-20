@@ -28,6 +28,13 @@ class SecurityEvent:
     process_name: str = ""
     destination: str = ""
 
+    def __post_init__(self) -> None:
+        if self.event_type not in {"login", "dns", "process", "file", "admin"}:
+            raise ValueError(f"Unsupported event_type: {self.event_type}")
+        if self.bytes_out < 0:
+            raise ValueError("bytes_out must be non-negative")
+        _ = self.dt
+
     @property
     def dt(self) -> datetime:
         value = self.timestamp.replace("Z", "+00:00")
