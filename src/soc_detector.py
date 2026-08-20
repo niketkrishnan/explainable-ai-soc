@@ -63,6 +63,15 @@ class Alert:
         return data
 
 
+@dataclass(frozen=True)
+class RuleResult:
+    name: str
+    matched: bool
+    reason: str
+    technique: str
+    score: float
+
+
 class HybridSOCDetector:
     """Combine transparent rules with an unsupervised anomaly detector."""
 
