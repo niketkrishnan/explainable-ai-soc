@@ -245,3 +245,15 @@ def validate_alert_payload(alert: dict[str, Any]) -> None:
         raise ValueError("Invalid alert severity")
     if not isinstance(alert["reasons"], list) or not isinstance(alert["techniques"], list):
         raise ValueError("Alert evidence fields must be lists")
+
+
+def summarize_incidents(incidents: list[dict[str, Any]]) -> dict[str, Any]:
+    distribution = {"low": 0, "medium": 0, "high": 0}
+    for incident in incidents:
+        band = risk_band(float(incident.get("max_score", 0.0)))
+        distribution[band] += 1
+    return {
+        "incident_count": len(incidents),
+        "severity_distribution": distribution,
+        "mean_max_score": round(sum(float(i.get("max_score", 0.0)) for i in incidents) / len(incidents), 4) if incidents else 0.0,
+    }
