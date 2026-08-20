@@ -1,0 +1,11 @@
+timestamp,user,asset,source_ip,event_type,success,privilege_change,bytes_out,process_name,destination
+2026-01-01T10:00:00Z,alice,workstation-01,10.0.0.10,login,true,false,120,,
+2026-01-01T10:03:00Z,alice,workstation-01,10.0.0.10,dns,true,false,200,,internal.example
+2026-01-01T10:05:00Z,bob,server-01,10.0.0.20,login,false,false,100,,
+2026-01-01T10:06:00Z,bob,server-01,10.0.0.20,login,false,false,100,,
+2026-01-01T10:07:00Z,bob,server-01,10.0.0.20,admin,true,true,100,,
+2026-01-01T10:08:00Z,bob,server-01,10.0.0.20,process,true,false,500,,
+2026-01-01T10:09:00Z,bob,server-01,10.0.0.20,file,true,false,250000,,
+2026-01-01T10:20:00Z,carol,laptop-02,10.0.0.30,login,true,false,300,,
+2026-01-01T10:21:00Z,carol,laptop-02,10.0.0.30,dns,true,false,500,,api.example
+2026-01-01T10:25:00Z,dave,workstation-03,10.0.0.40,process,true,false,900,powershell,
