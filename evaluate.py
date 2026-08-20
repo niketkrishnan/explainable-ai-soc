@@ -4,7 +4,9 @@ import csv
 import json
 from pathlib import Path
 
-from soc_detector import SecurityEvent, HybridSOCDetector, correlate_incidents
+from src.soc_detector import HybridSOCDetector, correlate_incidents, technique_coverage
+from src.event_loader import load_csv_events
+from src.audit import audit_record
 
 
 ROOT = Path(__file__).parent
@@ -12,24 +14,8 @@ DATA = ROOT / "data" / "events.csv"
 OUTPUT = ROOT / "artifacts" / "demo_results.json"
 
 
-def load_events() -> list[SecurityEvent]:
-    with DATA.open(newline="") as handle:
-        rows = list(csv.DictReader(handle))
-    return [
-        SecurityEvent(
-            timestamp=row["timestamp"],
-            user=row["user"],
-            asset=row["asset"],
-            source_ip=row["source_ip"],
-            event_type=row["event_type"],
-            success=row["success"].lower() == "true",
-            privilege_change=row["privilege_change"].lower() == "true",
-            bytes_out=int(row["bytes_out"]),
-            process_name=row["process_name"],
-            destination=row["destination"],
-        )
-        for row in rows
-    ]
+def load_events():
+    return load_csv_events(DATA)
 
 
 def main() -> None:
@@ -38,11 +24,15 @@ def main() -> None:
     alerts = detector.detect(events)
     incidents = correlate_incidents(events, alerts)
     result = {
+        "report_version": "0.2.0",
         "events": len(events),
         "alerts": len(alerts),
         "high_or_medium_alerts": sum(alert.severity != "low" for alert in alerts),
         "incidents": incidents,
         "alerts_detail": [alert.to_dict() for alert in alerts],
+        "feature_names": list(detector.feature_names()),
+        "technique_coverage": technique_coverage(alerts),
+        "audit": audit_record("evaluate", event_count=len(events), alert_count=len(alerts)),
         "data_note": "Local defensive fixture; not a production benchmark.",
     }
     OUTPUT.parent.mkdir(exist_ok=True)
