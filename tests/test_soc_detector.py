@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from soc_detector import Alert, HybridSOCDetector, SecurityEvent, correlate_incidents
+from soc_detector import Alert, HybridSOCDetector, SecurityEvent, correlate_incidents, summarize_alert_quality
 
 
 def event(index: int, **overrides) -> SecurityEvent:
@@ -126,3 +126,13 @@ def test_data_quality_detects_duplicate_identity():
     from src.data_quality import check_events
     events = [event(20), event(20)]
     assert check_events(events) == ["duplicate event identities: 1"]
+
+
+def test_alert_quality_summary_reports_explanation_coverage():
+    alerts = [Alert(0, "high", 0.8, ("rule matched",), ("T1110",), "alice", "host-1", "login"), Alert(1, "low", 0.1, (), (), "alice", "host-1", "dns")]
+    assert summarize_alert_quality(alerts) == {
+        "alert_count": 2,
+        "with_reasons": 1,
+        "with_techniques": 1,
+        "explanation_coverage": 0.5,
+    }
