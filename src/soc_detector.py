@@ -234,3 +234,14 @@ def risk_band(score: float) -> str:
     if score >= 0.20:
         return "medium"
     return "low"
+
+
+def validate_alert_payload(alert: dict[str, Any]) -> None:
+    required = {"event_index", "severity", "score", "reasons", "techniques", "user", "asset", "event_type"}
+    missing = required - set(alert)
+    if missing:
+        raise ValueError(f"Alert missing fields: {sorted(missing)}")
+    if alert["severity"] not in {"low", "medium", "high"}:
+        raise ValueError("Invalid alert severity")
+    if not isinstance(alert["reasons"], list) or not isinstance(alert["techniques"], list):
+        raise ValueError("Alert evidence fields must be lists")
