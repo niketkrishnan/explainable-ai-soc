@@ -77,9 +77,10 @@ class HybridSOCDetector:
 
     EVENT_TYPES = ("login", "dns", "process", "file", "admin")
 
-    def __init__(self, contamination: float = 0.15, random_state: int = 42) -> None:
+    def __init__(self, contamination: float = 0.15, random_state: int = 42, outbound_threshold: int = 100_000) -> None:
         self.contamination = contamination
         self.random_state = random_state
+        self.outbound_threshold = outbound_threshold
         self.scaler = StandardScaler()
         self.model = IsolationForest(
             contamination=contamination,
@@ -121,7 +122,7 @@ class HybridSOCDetector:
             reasons.append("privilege change observed")
             techniques.append("T1098")
             score += 0.35
-        if event.bytes_out >= 100_000:
+        if event.bytes_out >= self.outbound_threshold:
             reasons.append("unusually large outbound transfer")
             techniques.append("T1041")
             score += 0.25
