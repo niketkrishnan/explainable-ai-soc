@@ -14,6 +14,8 @@ jobs:
           python-version: '3.11'
       - name: Install project
         run: python -m pip install -e '.[dev]'
+      - name: Compile source
+        run: python -m compileall -q src tests evaluate.py
       - name: Run tests
         run: pytest -q
       - name: Run defensive demo evaluation
