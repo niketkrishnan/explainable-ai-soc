@@ -50,3 +50,12 @@ def test_incident_correlation_groups_same_user_and_asset():
     assert len(incidents) == 1
     assert len(incidents[0]["alerts"]) == 2
     assert incidents[0]["max_score"] == 0.9
+
+
+def test_security_event_rejects_invalid_values():
+    import pytest
+
+    with pytest.raises(ValueError):
+        event(6, event_type="unknown")
+    with pytest.raises(ValueError):
+        event(7, bytes_out=-1)
