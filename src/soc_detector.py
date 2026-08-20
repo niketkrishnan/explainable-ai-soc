@@ -76,6 +76,7 @@ class HybridSOCDetector:
     """Combine transparent rules with an unsupervised anomaly detector."""
 
     EVENT_TYPES = ("login", "dns", "process", "file", "admin")
+    RISKY_PROCESSES = frozenset({"powershell", "rundll32", "wscript"})
 
     def __init__(self, contamination: float = 0.15, random_state: int = 42, outbound_threshold: int = 100_000) -> None:
         self.contamination = contamination
@@ -97,7 +98,7 @@ class HybridSOCDetector:
             float(event.event_type in {"admin", "process"}),
             float(event.event_type == "login"),
             float(event.event_type == "dns"),
-            float(event.process_name.lower() in {"powershell", "rundll32", "wscript"}),
+            float(event.process_name.lower() in self.RISKY_PROCESSES),
             float(bool(event.destination)),
         ]
 
@@ -126,7 +127,7 @@ class HybridSOCDetector:
             reasons.append("unusually large outbound transfer")
             techniques.append("T1041")
             score += 0.25
-        if event.process_name.lower() in {"powershell", "rundll32", "wscript"}:
+        if event.process_name.lower() in self.RISKY_PROCESSES:
             reasons.append("high-risk process name in telemetry")
             techniques.append("T1059")
             score += 0.25
