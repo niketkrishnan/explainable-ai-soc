@@ -120,3 +120,9 @@ def test_technique_coverage_counts_alert_evidence():
     from soc_detector import technique_coverage
     alerts = [Alert(0, "medium", 0.3, (), ("T1110",), "a", "h", "login"), Alert(1, "high", 0.8, (), ("T1110", "T1098"), "a", "h", "admin")]
     assert technique_coverage(alerts) == {"T1098": 1, "T1110": 2}
+
+
+def test_data_quality_detects_duplicate_identity():
+    from src.data_quality import check_events
+    events = [event(20), event(20)]
+    assert check_events(events) == ["duplicate event identities: 1"]
