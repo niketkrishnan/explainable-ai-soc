@@ -6,6 +6,8 @@ A SOC detection pipeline that pairs transparent, rule-based signals with an Isol
 
 This project only scores telemetry that's handed to it. It doesn't scan networks, touch endpoints, or reach out to any external system.
 
+I built this while working on detection engineering and explainable ML for security at the Center for Cybersecurity Systems and Networks (Amrita) -- the recurring problem I kept seeing was analysts being handed a risk score with no way to interrogate it. This is a small, honest attempt at fixing that.
+
 ## How it works
 
 ```
@@ -32,6 +34,35 @@ pytest
 
 This runs the pipeline against a small local telemetry fixture and writes `artifacts/demo_results.json`. The fixture exists to demonstrate the mechanics end-to-end -- it's not a production benchmark, and no accuracy numbers are claimed from it.
 
+A read-only FastAPI service is also included for interactive testing:
+
+```bash
+uvicorn src.api:app --reload
+# then POST a JSON body of >=4 SecurityEvent records to /analyze
+```
+
+## What it looks like
+
+Trimmed excerpt of a real `artifacts/demo_results.json` run -- one incident, with the rule evidence and ATT&CK technique kept visible next to the score instead of being collapsed into it:
+
+```json
+{
+  "incident_id": "INC-0002",
+  "user": "bob",
+  "asset": "server-01",
+  "max_score": 0.3489,
+  "alerts": [
+    {
+      "severity": "medium",
+      "score": 0.2726,
+      "reasons": ["failed authentication event"],
+      "techniques": ["T1110"],
+      "event_type": "login"
+    }
+  ]
+}
+```
+
 ## What's actually being evaluated (in progress)
 
 The next milestone is running rules-only, ML-only, and hybrid detection side by side on a licensed public benchmark (UNSW-NB15 or CICIDS2017, pending license verification) and reporting real precision, recall, F1, false positives per 1,000 events, and detection latency. That comparison -- not the local fixture -- is what will make any accuracy claim in this repo meaningful, and it's the reason no such claim exists yet.
@@ -48,9 +79,9 @@ A working anomaly model isn't enough on its own. What determines whether a SOC a
 
 ## Roadmap
 
-- Public benchmark importer (UNSW-NB15 / CICIDS2017) with documented schema mapping
-- FastAPI endpoints + a minimal analyst dashboard
-- MITRE ATT&CK technique coverage reporting and alert-deduplication metrics
+- Public benchmark importer (UNSW-NB15 / CICIDS2017) with documented schema mapping and real precision/recall/F1 numbers
+- Minimal analyst dashboard on top of the existing FastAPI service (`src/api.py`)
+- Alert-deduplication metrics alongside the existing ATT&CK technique coverage reporting
 - Versioned evaluation artifacts wired into CI
 
 ## Limitations
